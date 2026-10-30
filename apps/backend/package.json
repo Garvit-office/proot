@@ -1,0 +1,36 @@
+{
+  "name": "backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "npm run build -w @proot/shared",
+    "dev": "tsx watch src/index.ts",
+    "prebuild": "npm run build -w @proot/shared",
+    "build": "tsc -p tsconfig.json",
+    "prestart": "npm run build -w @proot/shared",
+    "start": "tsx src/index.ts",
+    "create-admin": "tsx src/scripts/create-admin.ts",
+    "precreate-admin": "npm run build -w @proot/shared"
+  },
+  "dependencies": {
+    "@proot/shared": "*",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.7.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.5",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^22.15.3",
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.3"
+  }
+}

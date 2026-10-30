@@ -1,0 +1,29 @@
+{
+  "name": "proot",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Proot \u2014 neighborhood care, commerce, and community for dogs.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w webuser",
+    "dev:web": "npm run dev -w webuser",
+    "dev:webuser": "npm run dev -w webuser",
+    "dev:webadmin": "npm run dev -w webadmin",
+    "dev:backend": "npm run dev -w backend",
+    "dev:mobile": "npm run dev -w mobile",
+    "build": "npm run build -w webuser",
+    "build:web": "npm run build -w webuser",
+    "build:webuser": "npm run build -w webuser",
+    "build:webadmin": "npm run build -w webadmin",
+    "build:backend": "npm run build -w backend",
+    "lint": "npm run lint -w webuser",
+    "lint:webuser": "npm run lint -w webuser",
+    "lint:webadmin": "npm run lint -w webadmin",
+    "lint:mobile": "npm run lint -w mobile",
+    "start:backend": "npm run start -w backend",
+    "brand:export": "npm run build -w @proot/shared && node packages/shared/scripts/export-brand.mjs"
+  }
+}

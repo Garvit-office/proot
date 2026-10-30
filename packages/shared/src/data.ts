@@ -1,0 +1,330 @@
+import type {
+  ActivityItem,
+  CareService,
+  MealAnalysis,
+  Park,
+  PetEvent,
+  PetProfile,
+  Product,
+  UserPet,
+} from "./types.js";
+
+export const userPet: UserPet = {
+  name: "Maple",
+  breed: "Golden mix",
+  age: "3 years",
+  weightKg: 24,
+};
+
+export const products: Product[] = [
+  {
+    id: "slow-bowl",
+    name: "Stoneware slow bowl",
+    category: "Home",
+    price: 38,
+    blurb: "Weighted ceramic. Makes dinner last a little longer.",
+    image:
+      "https://images.unsplash.com/photo-1589924691995-400dc9f6438e?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "hemp-leash",
+    name: "Hemp leash, 2m",
+    category: "Care",
+    price: 42,
+    blurb: "Soft in the hand. No plastic hardware.",
+    image:
+      "https://images.unsplash.com/photo-1601758125946-6ec2e1c4e0d2?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "wool-bed",
+    name: "Felted wool nest",
+    category: "Home",
+    price: 128,
+    blurb: "Machine washable. Holds shape after years of naps.",
+    image:
+      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "chew-ring",
+    name: "Olive wood chew",
+    category: "Toys",
+    price: 18,
+    blurb: "Naturally antibacterial. For focused chewing.",
+    image:
+      "https://images.unsplash.com/photo-1534361960057-19889db9621e?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "kibble-bag",
+    name: "Daily kibble, salmon",
+    category: "Food",
+    price: 54,
+    blurb: "Single protein. No fillers. 4kg bag.",
+    image:
+      "https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "rain-coat",
+    name: "Waxed rain coat",
+    category: "Care",
+    price: 64,
+    blurb: "Cuts the wind. Dries on a hook.",
+    image:
+      "https://images.unsplash.com/photo-1544568100-847a948890b0?auto=format&fit=crop&w=1200&q=80",
+  },
+];
+
+export const careServices: CareService[] = [
+  {
+    id: "morning-walk",
+    title: "Morning neighborhood walk",
+    pro: "Asha K.",
+    rating: 4.9,
+    reviews: 214,
+    priceFrom: 18,
+    duration: "30 min",
+    category: "Walk",
+    blurb: "Same route Maple already knows. Photo at the park gate.",
+    image:
+      "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "bath-trim",
+    title: "Bath + tidy trim at home",
+    pro: "Leo M.",
+    rating: 4.8,
+    reviews: 91,
+    priceFrom: 65,
+    duration: "75 min",
+    category: "Groom",
+    blurb: "They bring the tub. You keep the floors.",
+    image:
+      "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "vet-check",
+    title: "At-home wellness check",
+    pro: "Dr. Nair",
+    rating: 5,
+    reviews: 48,
+    priceFrom: 90,
+    duration: "40 min",
+    category: "Vet",
+    blurb: "Weight, coat, teeth, and a quiet exam on the rug.",
+    image:
+      "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "manners",
+    title: "Loose-leash lesson",
+    pro: "Priya S.",
+    rating: 4.9,
+    reviews: 132,
+    priceFrom: 45,
+    duration: "50 min",
+    category: "Train",
+    blurb: "One skill. Practiced on your actual block.",
+    image:
+      "https://images.unsplash.com/photo-1551717743-49959800b1f6?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "evening-sit",
+    title: "Evening sit",
+    pro: "Rohan P.",
+    rating: 4.7,
+    reviews: 76,
+    priceFrom: 32,
+    duration: "2 hr",
+    category: "Sit",
+    blurb: "Dinner, a short walk, and a note when you get home.",
+    image:
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1200&q=80",
+  },
+];
+
+export const events: PetEvent[] = [
+  {
+    id: "sunday-meadow",
+    title: "Sunday meadow meetup",
+    when: "Sun · 8:30–10:00",
+    where: "Riverside Lawn",
+    neighborhood: "Indiranagar",
+    spots: 18,
+    blurb: "Off-leash hour for dogs who already play well. Coffee for humans.",
+    image:
+      "https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=1400&q=80",
+  },
+  {
+    id: "adoption-hour",
+    title: "Quiet adoption hour",
+    when: "Sat · 16:00",
+    where: "Proot Studio",
+    neighborhood: "Koramangala",
+    spots: 12,
+    blurb: "Meet two adult dogs. No crowds. Sit on the floor.",
+    image:
+      "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?auto=format&fit=crop&w=1400&q=80",
+  },
+  {
+    id: "agility-intro",
+    title: "Agility, first time",
+    when: "Thu · 18:30",
+    where: "District Yard",
+    neighborhood: "Jayanagar",
+    spots: 8,
+    blurb: "Low jumps. Lots of treats. Leave if it is too much.",
+    image:
+      "https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=1400&q=80",
+  },
+];
+
+export const parks: Park[] = [
+  {
+    id: "cubbon-dogs",
+    name: "Cubbon south lawn",
+    distanceKm: 1.2,
+    hours: "6:00–8:30 · 17:00–19:00",
+    amenities: ["Water", "Shade", "Bins"],
+    dogsNow: 11,
+    image:
+      "https://images.unsplash.com/photo-1508672019048-805c876b67e2?auto=format&fit=crop&w=1400&q=80",
+  },
+  {
+    id: "ulsoor-edge",
+    name: "Ulsoor lake edge",
+    distanceKm: 2.4,
+    hours: "Open dawn to dusk",
+    amenities: ["Loop path", "Benches"],
+    dogsNow: 4,
+    image:
+      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=1400&q=80",
+  },
+  {
+    id: "sankey-patch",
+    name: "Sankey patch",
+    distanceKm: 3.1,
+    hours: "6:00–20:00",
+    amenities: ["Fenced", "Water"],
+    dogsNow: 7,
+    image:
+      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1400&q=80",
+  },
+];
+
+export const nearbyPets: PetProfile[] = [
+  {
+    id: "otto",
+    name: "Otto",
+    breed: "Indie",
+    age: "2y",
+    bio: "Lives two streets over. Soft with small dogs.",
+    prompt: "Otto’s idea of a perfect Saturday",
+    answer: "A slow park loop, then a nap under the dining table.",
+    distanceKm: 0.4,
+    image:
+      "https://images.unsplash.com/photo-1561037404-61cd46aa615b?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "kiki",
+    name: "Kiki",
+    breed: "Beagle",
+    age: "4y",
+    bio: "Nose first. Will trade toys.",
+    prompt: "The one thing Kiki never skips",
+    answer: "Sniffing the same lamp post for a full minute.",
+    distanceKm: 0.9,
+    image:
+      "https://images.unsplash.com/photo-1505628346881-b72b27e84530?auto=format&fit=crop&w=1200&q=80",
+  },
+  {
+    id: "bruno",
+    name: "Bruno",
+    breed: "Lab mix",
+    age: "5y",
+    bio: "Big, careful, already vaccinated.",
+    prompt: "A green flag for Bruno",
+    answer: "Humans who ask before saying hi.",
+    distanceKm: 1.5,
+    image:
+      "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=1200&q=80",
+  },
+];
+
+export const mealCatalog: MealAnalysis[] = [
+  {
+    id: "chicken-rice",
+    label: "Chicken & rice bowl",
+    kcal: 420,
+    proteinG: 32,
+    fatG: 12,
+    notes: "Balanced for Maple’s weight. Skip extra oil.",
+    verdict: "Good",
+  },
+  {
+    id: "kibble",
+    label: "Salmon kibble, 1 cup",
+    kcal: 310,
+    proteinG: 24,
+    fatG: 10,
+    notes: "Matches the bag on her shelf.",
+    verdict: "Good",
+  },
+  {
+    id: "table-scraps",
+    label: "Mixed table scraps",
+    kcal: 280,
+    proteinG: 8,
+    fatG: 18,
+    notes: "Onion / spice risk. Better as a no.",
+    verdict: "Skip",
+  },
+  {
+    id: "yogurt-treat",
+    label: "Plain yogurt + apple",
+    kcal: 90,
+    proteinG: 6,
+    fatG: 2,
+    notes: "Fine as a small extra, not a meal.",
+    verdict: "Okay",
+  },
+];
+
+export const todayActivity: ActivityItem[] = [
+  {
+    id: "a1",
+    type: "Walk",
+    title: "Morning loop",
+    detail: "2.1 km · 28 min · Asha K.",
+    at: "07:12",
+  },
+  {
+    id: "a2",
+    type: "Meal",
+    title: "Breakfast kibble",
+    detail: "310 kcal · logged from photo",
+    at: "08:04",
+  },
+  {
+    id: "a3",
+    type: "Play",
+    title: "Yard chew",
+    detail: "14 min · olive wood",
+    at: "11:40",
+  },
+  {
+    id: "a4",
+    type: "Care",
+    title: "Wellness check booked",
+    detail: "Dr. Nair · tomorrow 10:00",
+    at: "13:02",
+  },
+];
+
+export function analyzeMealFromName(name: string): MealAnalysis {
+  const lower = name.toLowerCase();
+  if (lower.includes("chicken") || lower.includes("rice")) return mealCatalog[0];
+  if (lower.includes("kibble") || lower.includes("salmon")) return mealCatalog[1];
+  if (lower.includes("scrap") || lower.includes("pizza") || lower.includes("onion"))
+    return mealCatalog[2];
+  if (lower.includes("yogurt") || lower.includes("apple")) return mealCatalog[3];
+  return mealCatalog[Math.floor(Math.random() * mealCatalog.length)];
+}

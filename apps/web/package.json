@@ -1,0 +1,26 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "npm run build -w @proot/shared",
+    "dev": "next dev --turbopack",
+    "prebuild": "npm run build -w @proot/shared",
+    "build": "next build",
+    "prestart": "npm run build -w @proot/shared",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@proot/shared": "*",
+    "next": "^15.5.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "@types/react": "^19.1.2",
+    "@types/react-dom": "^19.1.2",
+    "typescript": "^5.8.3"
+  }
+}
