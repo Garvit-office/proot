@@ -1,5 +1,3 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
 import {
   analyzeMealFromName,
   careServices,
@@ -31,7 +29,11 @@ export type ProotStore = {
   nutritionLog: NutritionEntry[];
 };
 
-const seedStore: ProotStore = {
+// In-memory store — seeded from shared data on each cold start.
+// On Vercel's serverless/edge runtime the filesystem is read-only, so we keep
+// state in module-scope memory. Writes survive warm invocations within the same
+// lambda instance but reset on cold starts (acceptable for demo data).
+let _store: ProotStore = {
   userPet,
   products,
   careServices,
@@ -43,41 +45,12 @@ const seedStore: ProotStore = {
   nutritionLog: [],
 };
 
-function getStorePath() {
-  return path.join(process.cwd(), "data", "proot-db.json");
-}
-
 export async function readStore(): Promise<ProotStore> {
-  const storePath = getStorePath();
-  await fs.mkdir(path.dirname(storePath), { recursive: true });
-
-  try {
-    const raw = await fs.readFile(storePath, "utf8");
-    if (!raw.trim()) {
-      await writeStore(seedStore);
-      return seedStore;
-    }
-
-    const parsed = JSON.parse(raw) as Partial<ProotStore>;
-    return {
-      ...seedStore,
-      ...parsed,
-      nutritionLog: parsed.nutritionLog ?? [],
-    };
-  } catch (error: any) {
-    if (error?.code === "ENOENT") {
-      await writeStore(seedStore);
-      return seedStore;
-    }
-
-    throw error;
-  }
+  return _store;
 }
 
-export async function writeStore(store: ProotStore) {
-  const storePath = getStorePath();
-  await fs.mkdir(path.dirname(storePath), { recursive: true });
-  await fs.writeFile(storePath, JSON.stringify(store, null, 2), "utf8");
+export async function writeStore(store: ProotStore): Promise<void> {
+  _store = store;
 }
 
 export async function getCatalog() {

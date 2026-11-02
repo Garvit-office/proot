@@ -9,3 +9,5 @@ build
 coverage
 .turbo
 expo-env.d.ts
+*.tsbuildinfo
+apps/web/data/
