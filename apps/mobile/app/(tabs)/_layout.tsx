@@ -1,9 +1,10 @@
 import { theme } from "@proot/shared";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { SymbolView } from "expo-symbols";
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { PetAvatar } from "@/components/ProfileDrawer";
-import { fonts, Logo } from "@/components/ui";
+import { Badge, fonts, Logo } from "@/components/ui";
+import { useRealtime } from "@/lib/realtime";
 import { useSession } from "@/lib/session";
 
 const { colors } = theme;
@@ -22,6 +23,31 @@ function ProfileButton() {
   );
 }
 
+function NotificationsButton() {
+  const { unreadNotifications } = useRealtime();
+  return (
+    <Pressable
+      style={styles.icon}
+      onPress={() => router.push("/notifications")}
+      accessibilityRole="button"
+      accessibilityLabel={unreadNotifications ? `Notifications, ${unreadNotifications} unread` : "Notifications"}
+      hitSlop={6}
+    >
+      <SymbolView name={{ ios: "bell", android: "notifications", web: "notifications" }} tintColor={colors.ink} size={22} />
+      <Badge count={unreadNotifications} style={styles.badge} />
+    </Pressable>
+  );
+}
+
+function HeaderActions() {
+  return (
+    <View style={styles.actions}>
+      <NotificationsButton />
+      <ProfileButton />
+    </View>
+  );
+}
+
 export default function TabLayout() {
   return (
     <Tabs
@@ -30,7 +56,7 @@ export default function TabLayout() {
         headerTitleStyle: { fontFamily: fonts.heading, fontSize: 18, color: colors.ink },
         headerShadowVisible: false,
         headerTintColor: colors.ink,
-        headerRight: () => <ProfileButton />,
+        headerRight: () => <HeaderActions />,
         sceneStyle: { backgroundColor: colors.bg },
         tabBarActiveTintColor: colors.brand,
         tabBarInactiveTintColor: colors.muted,
@@ -82,7 +108,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="bowl"
         options={{
-          title: "Nutrition",
+          title: "Bowl",
           tabBarIcon: ({ color }) => (
             <SymbolView name={{ ios: "camera", android: "photo_camera", web: "photo_camera" }} tintColor={color} size={24} />
           ),
@@ -93,6 +119,9 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
+  actions: { flexDirection: "row", alignItems: "center", gap: 6 },
+  icon: { width: 36, height: 36, alignItems: "center", justifyContent: "center" },
+  badge: { position: "absolute", top: -2, right: -4 },
   avatar: {
     width: 34,
     height: 34,

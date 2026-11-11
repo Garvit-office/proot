@@ -20,5 +20,8 @@
   "devDependencies": {
     "sharp": "^0.35.5",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "socket.io-client": "^4.8.4"
   }
 }

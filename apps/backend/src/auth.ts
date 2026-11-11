@@ -1,56 +1,68 @@
-import type { Request, Response, NextFunction } from 'express';
-import { getDb } from './db.js';
-import { verifyToken } from './utils.js';
+import type { NextFunction, Request, Response } from 'express';
 import type { Role } from '@proot/shared';
+import { one } from './db.js';
+import { HttpError } from './lib/http.js';
+import { verifyToken } from './lib/security.js';
 
-export type AuthedRequest = Request & {
-  user?: {
-    id: string;
-    email: string;
-    name: string;
-    role: Role;
-  };
-};
+export type AuthUser = { id: string; email: string; name: string; role: Role; phone: string; lat: number | null; lng: number | null };
 
-export function authRequired(req: AuthedRequest, res: Response, next: NextFunction) {
-  const authHeader = req.headers.authorization ?? '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+export type AuthedRequest = Request & { user?: AuthUser };
 
-  if (!token) {
-    return res.status(401).json({ error: 'Authentication required.' });
-  }
-
+/**
+ * Resolve a bearer token to the CURRENT user row. Role, active flag and token version always come from
+ * the database, so role changes, deactivation and "sign out everywhere" apply on the next request.
+ */
+export async function userFromToken(token: string): Promise<AuthUser | null> {
+  let payload;
   try {
-    const payload = verifyToken(token);
-    const row = getDb()
-      .prepare('SELECT id, email, name, role FROM users WHERE id = ?')
-      .get(payload.sub) as { id: string; email: string; name: string; role: Role } | undefined;
-
-    if (!row) {
-      return res.status(401).json({ error: 'Invalid session.' });
-    }
-
-    req.user = row;
-    next();
+    payload = verifyToken(token);
   } catch {
-    return res.status(401).json({ error: 'Invalid or expired token.' });
+    return null;
   }
+  const row = await one<AuthUser & { is_active: boolean; token_version: number }>(
+    'SELECT id, email, name, role, phone, lat, lng, is_active, token_version FROM users WHERE id = $1',
+    [payload.sub],
+  );
+  if (!row || !row.is_active || row.token_version !== payload.ver) return null;
+  return { id: row.id, email: row.email, name: row.name, role: row.role, phone: row.phone, lat: row.lat, lng: row.lng };
+}
+
+function bearer(req: Request) {
+  const header = req.headers.authorization ?? '';
+  return header.startsWith('Bearer ') ? header.slice(7) : null;
+}
+
+export function authRequired(req: AuthedRequest, _res: Response, next: NextFunction) {
+  const token = bearer(req);
+  if (!token) return next(new HttpError(401, 'Please sign in to continue.'));
+  userFromToken(token)
+    .then((user) => {
+      if (!user) return next(new HttpError(401, 'Your session has expired. Please sign in again.'));
+      req.user = user;
+      next();
+    })
+    .catch(next);
+}
+
+/** Attach the user when a valid token is present, but don't require one. */
+export function authOptional(req: AuthedRequest, _res: Response, next: NextFunction) {
+  const token = bearer(req);
+  if (!token) return next();
+  userFromToken(token)
+    .then((user) => {
+      if (user) req.user = user;
+      next();
+    })
+    .catch(next);
 }
 
 export function requireRole(...roles: Role[]) {
-  return (req: AuthedRequest, res: Response, next: NextFunction) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Authentication required.' });
-    }
-
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Insufficient permissions.' });
-    }
-
+  return (req: AuthedRequest, _res: Response, next: NextFunction) => {
+    if (!req.user) return next(new HttpError(401, 'Please sign in to continue.'));
+    if (!roles.includes(req.user.role)) return next(new HttpError(403, 'Your account doesn’t have access to this.'));
     next();
   };
 }
 
-export function requireOwnerOrAdmin(userId: string, req: AuthedRequest) {
-  return !!req.user && (req.user.id === userId || req.user.role === 'ADMIN');
-}
+export const isOwnerOrAdmin = (req: AuthedRequest, ownerId: string | null) =>
+  Boolean(req.user && (req.user.id === ownerId || req.user.role === 'ADMIN'));

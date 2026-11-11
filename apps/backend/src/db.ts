@@ -1,112 +1,70 @@
-import Database from 'better-sqlite3';
+import pg from 'pg';
 import { appConfig } from './config.js';
 
-export const db = new Database(appConfig.dbPath);
-db.pragma('journal_mode = WAL');
+// Return BIGINT/NUMERIC counts as JS numbers (all our values fit comfortably), and DATE as plain 'YYYY-MM-DD'.
+pg.types.setTypeParser(pg.types.builtins.INT8, (v) => Number(v));
+pg.types.setTypeParser(pg.types.builtins.NUMERIC, (v) => Number(v));
+pg.types.setTypeParser(pg.types.builtins.DATE, (v) => v);
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY,
-    email TEXT UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    name TEXT NOT NULL,
-    role TEXT NOT NULL CHECK(role IN ('USER','EVENT_MANAGER','ADMIN')),
-    created_at TEXT NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS pets (
-    id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
-    name TEXT NOT NULL,
-    breed TEXT NOT NULL,
-    age TEXT NOT NULL,
-    weight_kg REAL NOT NULL,
-    created_at TEXT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-  );
-
-  CREATE TABLE IF NOT EXISTS nutrition_records (
-    id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
-    label TEXT NOT NULL,
-    kcal INTEGER NOT NULL,
-    protein_g INTEGER NOT NULL,
-    fat_g INTEGER NOT NULL,
-    verdict TEXT NOT NULL CHECK(verdict IN ('Good','Okay','Skip')),
-    notes TEXT NOT NULL,
-    photo TEXT,
-    created_at TEXT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-  );
-
-  CREATE TABLE IF NOT EXISTS events (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
-    location TEXT NOT NULL,
-    starts_at TEXT NOT NULL,
-    published INTEGER NOT NULL DEFAULT 0,
-    manager_id TEXT,
-    created_at TEXT NOT NULL,
-    FOREIGN KEY (manager_id) REFERENCES users(id)
-  );
-
-  CREATE TABLE IF NOT EXISTS event_rsvps (
-    id TEXT PRIMARY KEY,
-    event_id TEXT NOT NULL,
-    user_id TEXT NOT NULL,
-    created_at TEXT NOT NULL,
-    UNIQUE(event_id, user_id),
-    FOREIGN KEY (event_id) REFERENCES events(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
-  );
-
-  CREATE TABLE IF NOT EXISTS audit_logs (
-    id TEXT PRIMARY KEY,
-    actor_id TEXT,
-    action TEXT NOT NULL,
-    details TEXT NOT NULL,
-    created_at TEXT NOT NULL,
-    FOREIGN KEY (actor_id) REFERENCES users(id)
-  );
-`);
-
-// Onboarding profile columns. CREATE TABLE IF NOT EXISTS won't touch an existing
-// pets table, so add whatever is missing — this upgrades older local databases in place.
-const petColumns: [name: string, definition: string][] = [
-  ['sex', "TEXT NOT NULL DEFAULT 'Female'"],
-  ['birth_date', "TEXT NOT NULL DEFAULT ''"],
-  ['birth_date_approx', 'INTEGER NOT NULL DEFAULT 0'],
-  ['photo', 'TEXT'],
-  ['neutered', 'INTEGER NOT NULL DEFAULT 0'],
-  ['vaccinations', "TEXT NOT NULL DEFAULT '[]'"],
-  ['allergies', "TEXT NOT NULL DEFAULT ''"],
-  ['conditions', "TEXT NOT NULL DEFAULT ''"],
-  ['vet_name', "TEXT NOT NULL DEFAULT ''"],
-  ['vet_phone', "TEXT NOT NULL DEFAULT ''"],
-  ['microchip_id', "TEXT NOT NULL DEFAULT ''"],
-  ['diet_type', "TEXT NOT NULL DEFAULT 'Kibble'"],
-  ['meals_per_day', 'INTEGER NOT NULL DEFAULT 2'],
-  ['activity_level', "TEXT NOT NULL DEFAULT 'Moderate'"],
-  ['temperament', "TEXT NOT NULL DEFAULT '[]'"],
-  ['social', "TEXT NOT NULL DEFAULT 'Selective'"],
-  ['bio', "TEXT NOT NULL DEFAULT ''"],
-  ['prompt', "TEXT NOT NULL DEFAULT ''"],
-  ['answer', "TEXT NOT NULL DEFAULT ''"],
-  ['updated_at', "TEXT NOT NULL DEFAULT ''"],
-];
-
-const existingPetColumns = new Set((db.prepare('PRAGMA table_info(pets)').all() as { name: string }[]).map((col) => col.name));
-for (const [name, definition] of petColumns) {
-  if (!existingPetColumns.has(name)) db.exec(`ALTER TABLE pets ADD COLUMN ${name} ${definition}`);
+if (!appConfig.databaseUrl) {
+  console.error('\nDATABASE_URL is not set. Add your PostgreSQL connection string to .env — see DATABASE_SETUP.md.\n');
+  process.exit(1);
 }
-db.exec('CREATE INDEX IF NOT EXISTS idx_pets_user ON pets(user_id)');
 
-const existingEventColumns = new Set((db.prepare('PRAGMA table_info(events)').all() as { name: string }[]).map((col) => col.name));
-if (!existingEventColumns.has('capacity')) db.exec('ALTER TABLE events ADD COLUMN capacity INTEGER NOT NULL DEFAULT 0');
-if (!existingEventColumns.has('updated_at')) db.exec("ALTER TABLE events ADD COLUMN updated_at TEXT NOT NULL DEFAULT ''");
-db.exec('CREATE INDEX IF NOT EXISTS idx_rsvps_event ON event_rsvps(event_id)');
+export const pool = new pg.Pool({
+  connectionString: appConfig.databaseUrl,
+  ssl: appConfig.databaseSsl ? { rejectUnauthorized: false } : undefined,
+  max: Number(process.env.DATABASE_POOL_MAX ?? 10),
+  idleTimeoutMillis: 30_000,
+});
 
-export function getDb() {
-  return db;
+pool.on('error', (error) => console.error('PostgreSQL pool error:', error.message));
+
+export type Db = Pick<pg.PoolClient, 'query'>;
+
+/** Run a parameterised query and return the rows. */
+export async function query<T = any>(sql: string, params: unknown[] = [], db: Db = pool): Promise<T[]> {
+  const result = await db.query(sql, params as any[]);
+  return result.rows as T[];
+}
+
+/** First row or null. */
+export async function one<T = any>(sql: string, params: unknown[] = [], db: Db = pool): Promise<T | null> {
+  const rows = await query<T>(sql, params, db);
+  return rows[0] ?? null;
+}
+
+export async function count(sql: string, params: unknown[] = [], db: Db = pool): Promise<number> {
+  const row = await one<{ n: number }>(sql, params, db);
+  return Number(row?.n ?? 0);
+}
+
+/** Run `fn` inside a transaction; rolls back if it throws. */
+export async function tx<T>(fn: (db: pg.PoolClient) => Promise<T>): Promise<T> {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const result = await fn(client);
+    await client.query('COMMIT');
+    return result;
+  } catch (error) {
+    await client.query('ROLLBACK').catch(() => undefined);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function checkDatabase() {
+  try {
+    await pool.query('SELECT 1');
+  } catch (error) {
+    console.error(`\nCould not connect to PostgreSQL: ${(error as Error).message}\nCheck DATABASE_URL in .env — see DATABASE_SETUP.md.\n`);
+    process.exit(1);
+  }
+  const table = await one<{ exists: boolean }>("SELECT to_regclass('public.users') IS NOT NULL AS exists");
+  if (!table?.exists) {
+    console.error('\nThe database is reachable but has no tables yet. Run: npm run db:migrate\n');
+    process.exit(1);
+  }
 }

@@ -3,11 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { canManageEvents, estimateDailyKcal, isAdmin, ROLE_LABELS, sizeFromWeight, type PetRecord } from '@proot/shared';
-import { useSession } from '../lib/session';
+import { canManageEvents, canOfferCare, estimateDailyKcal, isAdmin, ROLE_LABELS, sizeFromWeight, type PetRecord } from '@proot/shared';
+import { ADMIN_URL, useSession } from '../lib/session';
 import { Icon } from './Icon';
-
-const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL ?? 'http://localhost:3001';
 
 export function PetAvatar({ pet, size = 36 }: { pet: Pick<PetRecord, 'name' | 'photo'>; size?: number }) {
   return pet.photo ? (
@@ -164,13 +162,29 @@ export function ProfileDrawer({ open, onClose }: { open: boolean; onClose: () =>
             <section className="drawer-section drawer-account">
               <h3>Account</h3>
               <p>
-                <strong>{user.name}</strong> <span className={`chip ${isAdmin(user.role) ? 'brand' : canManageEvents(user.role) ? 'warn' : ''}`}>{ROLE_LABELS[user.role]}</span>
+                <strong>{user.name}</strong> <span className={`chip ${isAdmin(user.role) ? 'brand' : user.role === 'USER' ? '' : 'warn'}`}>{ROLE_LABELS[user.role]}</span>
                 <br /><small>{user.email}</small>
               </p>
+              <nav className="drawer-links" aria-label="Your account">
+                <Link href="/orders" onClick={onClose}><Icon name="package" size={17} /> Orders</Link>
+                <Link href="/bookings" onClick={onClose}><Icon name="calendar" size={17} /> Bookings</Link>
+                <Link href="/selling" onClick={onClose}><Icon name="store" size={17} /> Selling</Link>
+                <Link href="/notifications" onClick={onClose}><Icon name="bell" size={17} /> Notifications</Link>
+                <Link href="/account" onClick={onClose}><Icon name="settings" size={17} /> Account settings</Link>
+              </nav>
+              {canOfferCare(user.role) && (
+                <>
+                  <h3>Provider tools</h3>
+                  <nav className="drawer-links" aria-label="Provider tools">
+                    <Link href="/provider/services" onClick={onClose}><Icon name="heart" size={17} /> My services</Link>
+                    <Link href="/provider/bookings" onClick={onClose}><Icon name="clock" size={17} /> Incoming bookings</Link>
+                  </nav>
+                </>
+              )}
               {canManageEvents(user.role) && (
                 <div className="drawer-actions role-links">
                   <a className="button secondary block" href={`${ADMIN_URL}/events`} target="_blank" rel="noreferrer">
-                    <Icon name="calendar" size={16} /> Manage events
+                    <Icon name="calendar" size={16} /> Manage events in the console
                   </a>
                   {isAdmin(user.role) && (
                     <a className="button secondary block" href={ADMIN_URL} target="_blank" rel="noreferrer">
@@ -179,7 +193,7 @@ export function ProfileDrawer({ open, onClose }: { open: boolean; onClose: () =>
                   )}
                 </div>
               )}
-              <button className="button secondary block" onClick={() => { signOut(); onClose(); }}>Sign out</button>
+              <button className="button secondary block" onClick={() => { signOut(); onClose(); }}><Icon name="logout" size={16} /> Sign out</button>
             </section>
           )}
         </div>

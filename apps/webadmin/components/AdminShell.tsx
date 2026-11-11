@@ -8,12 +8,17 @@ import { useSession } from '../lib/session';
 import { Icon, type IconName } from './Icon';
 
 const logo = svgDataUri(wordmarkSvg('dark'));
+const WEBUSER_URL = process.env.NEXT_PUBLIC_WEBUSER_URL ?? 'http://localhost:3000';
 
 type NavItem = { href: string; label: string; icon: IconName; allowed: (role: Role) => boolean };
 
 export const NAV: NavItem[] = [
   { href: '/', label: 'Overview', icon: 'grid', allowed: isAdmin },
   { href: '/users', label: 'Users', icon: 'users', allowed: isAdmin },
+  { href: '/marketplace', label: 'Marketplace', icon: 'bag', allowed: isAdmin },
+  { href: '/orders', label: 'Orders', icon: 'box', allowed: isAdmin },
+  { href: '/care', label: 'Care', icon: 'care', allowed: isAdmin },
+  { href: '/parks', label: 'Parks', icon: 'tree', allowed: isAdmin },
   { href: '/events', label: 'Events', icon: 'flag', allowed: canManageEvents },
   { href: '/audit', label: 'Audit', icon: 'shield', allowed: isAdmin },
 ];
@@ -32,6 +37,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <img src={svgDataUri(wordmarkSvg('light'))} alt="Proot" className="auth-logo" />
           <h1>No console access</h1>
           <p className="muted">{user.email} is a {ROLE_LABELS[user.role].toLowerCase()}. The console is for event managers and admins — ask an admin to change your role.</p>
+          {user.role === 'PROVIDER' && (
+            <p className="note">
+              Care providers manage their services and bookings in the Proot app.{' '}
+              <a className="link" href={`${WEBUSER_URL}/provider/bookings`}>Open provider bookings <Icon name="external" size={13} /></a>
+            </p>
+          )}
           <button className="button block" onClick={signOut}>Sign in as someone else</button>
         </div>
       </div>
@@ -58,7 +69,6 @@ export function AdminShell({ children }: { children: ReactNode }) {
               </Link>
             );
           })}
-          <span className="nav-item unavailable" aria-disabled="true"><Icon name="bag" />Catalog<em>Soon</em></span>
         </nav>
         <div className="sidebar-foot">
           <span className="avatar">{user.name[0]?.toUpperCase()}</span>

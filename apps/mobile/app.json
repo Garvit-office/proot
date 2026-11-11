@@ -29,8 +29,8 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "Proot uses photos to log Maple’s meals.",
-          "cameraPermission": "Proot uses the camera to photograph meals before feeding."
+          "photosPermission": "Proot uses your photos for your dog’s profile, meal checks, and marketplace listings.",
+          "cameraPermission": "Proot uses the camera to photograph meals, your dog, and items you list for sale."
         }
       ],
       [
@@ -42,7 +42,14 @@
           "imageWidth": 220
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Proot uses your location to show nearby parks, care, events, listings, and dogs around you."
+        }
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

@@ -1,6 +1,0 @@
-{
-  "buildCommand": "cd ../.. && npm run build -w @proot/shared && npm run build -w web",
-  "installCommand": "cd ../.. && npm install",
-  "outputDirectory": ".next",
-  "framework": "nextjs"
-}

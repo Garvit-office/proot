@@ -67,6 +67,9 @@ function Onboarding() {
   const params = useSearchParams();
   const editId = params.get('edit');
   const addingAnother = params.get('new') === '1';
+  // Only in-app paths, so ?next= can't bounce people off-site.
+  const rawNext = params.get('next');
+  const nextPath = rawNext && rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
   const { status, user, pets, savePet } = useSession();
 
   const [draft, setDraft] = useState<PetDraft>(emptyPetDraft);
@@ -98,8 +101,8 @@ function Onboarding() {
 
   // Someone who already has a dog and lands here plainly goes home.
   useEffect(() => {
-    if (status === 'ready' && user?.onboarded && !editId && !addingAnother && !saved) router.replace('/');
-  }, [status, user, editId, addingAnother, saved, router]);
+    if (status === 'ready' && user?.onboarded && !editId && !addingAnother && !saved) router.replace(nextPath);
+  }, [status, user, editId, addingAnother, saved, router, nextPath]);
 
   useEffect(() => {
     if (ready && !editId && !saved) storeDraft({ draft, step });
@@ -172,7 +175,7 @@ function Onboarding() {
     );
   }
 
-  if (saved) return <DoneStep pet={saved} edited={Boolean(editId)} headingRef={headingRef} />;
+  if (saved) return <DoneStep pet={saved} edited={Boolean(editId)} headingRef={headingRef} nextPath={nextPath} />;
 
   return (
     <main className="wrap page-section onboarding">
@@ -447,7 +450,7 @@ function ReviewStep({ draft, onEdit }: { draft: PetDraft; onEdit: (step: Onboard
   );
 }
 
-function DoneStep({ pet, edited, headingRef }: { pet: PetRecord; edited: boolean; headingRef: React.RefObject<HTMLHeadingElement | null> }) {
+function DoneStep({ pet, edited, headingRef, nextPath }: { pet: PetRecord; edited: boolean; headingRef: React.RefObject<HTMLHeadingElement | null>; nextPath: string }) {
   return (
     <main className="wrap page-section onboarding">
       <div className="panel empty done-card">
@@ -455,7 +458,7 @@ function DoneStep({ pet, edited, headingRef }: { pet: PetRecord; edited: boolean
         <h1 ref={headingRef} tabIndex={-1}>{edited ? `${pet.name}’s profile is updated.` : `Welcome to the block, ${pet.name}.`}</h1>
         <p>{edited ? 'Changes are live across Proot.' : 'Your neighborhood is now set up around them. Open the profile any time from the avatar in the top-right.'}</p>
         <div className="actions">
-          <Link className="button primary" href="/">Go to home</Link>
+          <Link className="button primary" href={nextPath}>{nextPath === '/' ? 'Go to home' : 'Continue'}</Link>
           {!edited && <Link className="button secondary" href="/nutrition">Log {pet.name}’s first meal</Link>}
         </div>
       </div>

@@ -5,9 +5,10 @@ dist
 build
 .DS_Store
 *.log
-.env*.local
+.env
+.env.*
+!.env.example
 coverage
 .turbo
 expo-env.d.ts
 *.tsbuildinfo
-apps/web/data/

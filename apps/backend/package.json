@@ -10,19 +10,29 @@
     "build": "tsc -p tsconfig.json",
     "prestart": "npm run build -w @proot/shared",
     "start": "tsx src/index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "db:migrate": "tsx src/scripts/migrate.ts",
+    "db:seed": "tsx src/scripts/migrate.ts db/seed.sql",
+    "predb:migrate": "npm run build -w @proot/shared",
     "create-admin": "tsx src/scripts/create-admin.ts",
-    "precreate-admin": "npm run build -w @proot/shared"
+    "precreate-admin": "npm run build -w @proot/shared",
+    "test:e2e": "tsx --test --test-concurrency=1 test/e2e.test.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
     "@proot/shared": "*",
     "bcryptjs": "^2.4.3",
-    "better-sqlite3": "^11.7.0",
     "cors": "^2.8.5",
+    "dotenv": "^18.0.10",
     "express": "^4.21.2",
+    "express-rate-limit": "^8.7.4",
     "helmet": "^8.0.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
-    "zod": "^3.24.1"
+    "pg": "^8.23.1",
+    "razorpay": "^2.9.8",
+    "socket.io": "^4.8.4",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/cors": "^2.8.5",
@@ -30,6 +40,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
     "@types/node": "^22.15.3",
+    "@types/pg": "^8.23.1",
     "tsx": "^4.19.2",
     "typescript": "^5.8.3"
   }

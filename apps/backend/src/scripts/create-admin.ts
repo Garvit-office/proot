@@ -2,10 +2,9 @@
 // Creates the account as ADMIN, or promotes an existing account (its password is left alone).
 import { parseArgs } from 'node:util';
 import { ensureAdmin } from '../bootstrap.js';
+import { pool } from '../db.js';
 
-const { values } = parseArgs({
-  options: { email: { type: 'string' }, password: { type: 'string' }, name: { type: 'string' } },
-});
+const { values } = parseArgs({ options: { email: { type: 'string' }, password: { type: 'string' }, name: { type: 'string' } } });
 
 if (!values.email) {
   console.error("Usage: npm run create-admin -w backend -- --email you@example.com [--password '...'] [--name 'Your Name']");
@@ -13,9 +12,11 @@ if (!values.email) {
 }
 
 try {
-  const result = ensureAdmin({ email: values.email, password: values.password, name: values.name });
+  const result = await ensureAdmin({ email: values.email, password: values.password, name: values.name });
   console.log({ created: `Created admin ${values.email}.`, promoted: `Promoted ${values.email} to ADMIN.`, unchanged: `${values.email} is already an ADMIN.` }[result]);
 } catch (error) {
   console.error((error as Error).message);
-  process.exit(1);
+  process.exitCode = 1;
+} finally {
+  await pool.end();
 }

@@ -1,39 +1,70 @@
+'use client';
+
 import Link from 'next/link';
-import { events } from '@proot/shared';
+import { canManageEvents, formatDistance, type EventRecord } from '@proot/shared';
+import { RsvpButton, SpotsChip } from '../../components/care/RsvpButton';
 import { Icon } from '../../components/Icon';
-import { LiveEvents } from '../../components/LiveEvents';
+import { EmptyState, ErrorNote, LocationPrompt, PageHead, PageLoading, Spinner } from '../../components/ui';
+import { formatWhen, useLoad, useNear, useRequireUser } from '../../lib/hooks';
+import { ADMIN_URL, api, useSocketEvent } from '../../lib/session';
 
 export default function EventsPage() {
+  const { ready, user } = useRequireUser();
+  const near = useNear();
+  const { data, setData, error, reload } = useLoad(() => api.listEvents(near).then((r) => r.visible), [near?.lat, near?.lng], ready);
+
+  const replace = (e: EventRecord) => setData((list) => list?.map((x) => (x.id === e.id ? e : x)));
+
+  useSocketEvent('event:updated', (u) => {
+    if (u.deleted) setData((list) => list?.filter((x) => x.id !== u.id));
+    else if (data && !data.some((x) => x.id === u.id)) reload(); // newly published
+    else setData((list) => list?.map((x) => (x.id === u.id ? { ...x, rsvpCount: u.rsvpCount } : x)));
+  });
+
+  if (!ready) return <PageLoading />;
+
   return (
     <main className="wrap page-section">
-      <header className="page-head">
-        <p className="eyebrow">Events</p>
-        <h1>Small gatherings, this district.</h1>
-        <p className="lede">Meetups with a cap, so it stays calm and comfortable for every dog.</p>
-      </header>
-      <LiveEvents />
-      <p className="eyebrow curated-label">Proot picks</p>
-      <div className="card-grid">
-        {events.map((event) => (
-          <Link className="card" href={`/events/${event.id}`} key={event.id}>
-            <div className="card-media">
-              <img src={event.image} alt={event.title} />
-              <span className="chip"><Icon name="calendar" size={13} /> {event.when}</span>
-            </div>
-            <div className="card-body">
-              <h2>{event.title}</h2>
-              <div className="card-meta">
-                <span><Icon name="pin" size={14} /> {event.where}</span>
+      <PageHead
+        eyebrow="Events"
+        title="Small gatherings."
+        lede="Capped meetups published by local organisers. RSVP to save your spot — counts update live."
+        actions={canManageEvents(user?.role) && (
+          <a className="button secondary" href={`${ADMIN_URL}/events`} target="_blank" rel="noreferrer">
+            <Icon name="calendar" size={16} /> Manage events
+          </a>
+        )}
+      />
+      <LocationPrompt what="how far each event is" />
+      <ErrorNote error={error} onRetry={reload} />
+      {!data && !error && <Spinner label="Loading events…" />}
+      {data && data.length === 0 && <EmptyState icon="calendar" title="Nothing on the calendar yet." text="Organisers publish meetups here — check back soon." />}
+      {data && data.length > 0 && (
+        <div className="live-list">
+          {data.map((e) => (
+            <article key={e.id} className="panel live-event event-row">
+              <div className="live-date">
+                <strong>{new Date(e.startsAt).getDate()}</strong>
+                <span>{new Date(e.startsAt).toLocaleString([], { month: 'short' })}</span>
               </div>
-              <p className="card-text">{event.blurb}</p>
-              <div className="card-foot">
-                <span className="chip brand">{event.spots} spots</span>
-                <span className="card-cta">{event.neighborhood} <Icon name="arrowRight" size={15} /></span>
+              <div className="live-body">
+                <Link href={`/events/${e.id}`}><h3>{e.title}</h3></Link>
+                <div className="card-meta">
+                  <span><Icon name="clock" size={14} /> {formatWhen(e.startsAt)}</span>
+                  <span><Icon name="pin" size={14} /> {e.location}</span>
+                  {e.distanceKm != null && <span>{formatDistance(e.distanceKm)}</span>}
+                  {e.managerName && <span>By {e.managerName}</span>}
+                </div>
+                <p className="card-text">{e.description}</p>
               </div>
-            </div>
-          </Link>
-        ))}
-      </div>
+              <div className="live-cta">
+                <SpotsChip event={e} />
+                <RsvpButton event={e} onChange={replace} />
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
     </main>
   );
 }

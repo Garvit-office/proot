@@ -1,0 +1,71 @@
+/* care area styles */
+
+/* Care list + detail */
+.is-refreshing { opacity: 0.6; transition: opacity 150ms ease; }
+.care-paused { margin-left: 6px; }
+.care-detail-media { display: grid; gap: 22px; }
+.care-reviews h2 { margin: 0 0 12px; font-size: 1.2rem; }
+.review-item { display: flex; gap: 12px; align-items: flex-start; }
+.review-item p { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.9rem; }
+.review-item .stars { vertical-align: -2px; margin: 0 4px; }
+.facts li .pet-avatar { flex: none; }
+.care-book, .care-booked { margin-top: 28px; }
+.care-book h2, .care-booked h2 { margin: 0; font-size: 1.3rem; }
+.care-booked { display: grid; gap: 10px; }
+.care-booked .actions { margin-top: 6px; }
+.day-strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin; }
+.day {
+  display: grid; justify-items: center; gap: 0; flex: none; min-width: 56px; padding: 8px 6px;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink-soft); cursor: pointer; line-height: 1.2;
+}
+.day strong { font-size: 1.15rem; color: var(--ink); }
+.day small { font-size: 0.68rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.day.selected { border-color: var(--brand); background: var(--brand-soft); }
+.day.selected strong, .day.selected small { color: var(--brand); }
+.slot-grid .option { font-variant-numeric: tabular-nums; }
+.field > span { color: var(--ink-soft); font-size: 0.85rem; font-weight: 600; }
+
+/* Bookings */
+.booking-section { margin-bottom: 36px; }
+.booking-section > h2 { margin: 0 0 14px; font-size: 1.3rem; }
+.booking-card { display: grid; gap: 12px; padding: 16px 18px; }
+.booking-main { display: flex; gap: 16px; align-items: flex-start; }
+.booking-main .grow { flex: 1; min-width: 0; display: grid; gap: 6px; }
+.booking-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.booking-title h3 { margin: 0; font-size: 1.08rem; }
+.booking-title a:hover h3 { color: var(--brand); }
+.booking-card .card-meta .pet-avatar { display: inline-grid; }
+.booking-detail { display: flex; align-items: center; gap: 6px; margin: 0; color: var(--muted); font-size: 0.86rem; }
+.booking-card .row-actions { justify-content: flex-start; }
+.booking-review { padding: 12px 14px; border-radius: var(--radius-sm); background: var(--bg); font-size: 0.9rem; }
+.booking-review p { margin: 4px 0 0; color: var(--ink-soft); }
+.booking-review .stars { vertical-align: -2px; }
+.review-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+/* Provider tools */
+.service-row .booking-title { margin-bottom: 2px; }
+.service-row .row-actions { align-self: center; }
+.service-form { margin-bottom: 28px; }
+.service-form h2 { margin: 0; font-size: 1.3rem; }
+.service-photo { display: flex; align-items: center; gap: 16px; }
+.service-photo-drop {
+  position: relative; display: grid; place-items: center; width: 200px; aspect-ratio: 4 / 3; overflow: hidden;
+  border: 1.5px dashed var(--line-strong); border-radius: var(--radius-sm); background: var(--bg); color: var(--muted); cursor: pointer; font-size: 0.85rem; font-weight: 600;
+}
+.service-photo-drop span { display: grid; justify-items: center; gap: 6px; }
+.service-photo-drop:hover { border-color: var(--brand); color: var(--brand); }
+.service-photo-drop img { width: 100%; height: 100%; object-fit: cover; }
+.service-photo-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.service-form-actions { justify-content: flex-end; }
+
+/* Events */
+.event-row .live-body a:hover h3 { color: var(--brand); }
+.rsvp { display: grid; gap: 4px; justify-items: end; }
+.event-attendees { margin-top: 28px; }
+.event-attendees h2 { margin: 0; font-size: 1.2rem; }
+
+@media (max-width: 760px) {
+  .service-row { flex-wrap: wrap; }
+  .service-row .row-actions { width: 100%; justify-content: flex-start; }
+  .rsvp { justify-items: start; }
+}

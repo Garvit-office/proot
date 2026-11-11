@@ -155,3 +155,56 @@ td .sub { display: flex; align-items: center; gap: 4px; margin-top: 2px; color: 
   .stats-grid { gap: 10px; }
   .stat-card { padding: 14px; }
 }
+
+/* Console additions: shared list controls */
+.spinner.small { display: inline-block; width: 20px; height: 20px; border-width: 2px; vertical-align: middle; }
+.note { margin: 0; padding: 12px 14px; border-radius: 10px; background: var(--brand-soft); color: var(--ink-soft); font-size: 0.86rem; }
+.note .link { display: inline-flex; align-items: center; gap: 4px; }
+.pager { display: flex; align-items: center; justify-content: flex-end; gap: 6px; padding: 10px 16px; border-top: 1px solid var(--line); }
+.pager .count { margin-right: 8px; }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.toolbar select { min-height: 40px; }
+.thumb { display: inline-grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: var(--surface-2); color: var(--muted); font-weight: 700; vertical-align: middle; }
+.thumb.round { border-radius: 50%; width: 34px; height: 34px; }
+.cell-media { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.cell-media > div { min-width: 0; }
+.row-actions select { min-height: 34px; padding: 4px 8px; }
+.inline-actions { display: inline-flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; }
+tr.expanded > td { background: var(--bg); }
+.expander { display: inline-grid; place-items: center; width: 28px; height: 28px; border: 0; border-radius: 8px; background: none; color: var(--muted); cursor: pointer; transition: transform 150ms ease; }
+.expander:hover { background: var(--surface-2); color: var(--ink); }
+.expander.open { transform: rotate(90deg); }
+.detail { display: grid; grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); gap: 20px; padding: 4px 0 8px; }
+.detail h3 { margin: 0 0 8px; color: var(--muted); font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+.detail ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.detail li { display: flex; align-items: center; gap: 10px; }
+.detail address { font-style: normal; line-height: 1.6; }
+.detail .grow { flex: 1; min-width: 0; }
+.tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--line); }
+.tabs button { padding: 10px 14px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); font-weight: 600; cursor: pointer; margin-bottom: -1px; }
+.tabs button.active { color: var(--brand); border-bottom-color: var(--brand); }
+.stats-grid.compact .stat-card strong { font-size: 1.7rem; }
+.section-label { margin: 8px 0 12px; color: var(--muted); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; }
+.live-dot { display: inline-block; width: 8px; height: 8px; margin-right: 6px; border-radius: 50%; background: var(--muted); vertical-align: middle; }
+.live-dot.on { background: var(--good); box-shadow: 0 0 0 3px var(--good-soft); }
+.photo-field { display: flex; gap: 16px; align-items: flex-start; font-weight: 400; }
+.photo-preview { width: 160px; height: 104px; border-radius: 12px; object-fit: cover; border: 1px solid var(--line); background: var(--surface-2); }
+.photo-preview.placeholder { display: grid; place-items: center; color: var(--muted); font-size: 0.8rem; }
+.photo-actions { display: grid; gap: 6px; justify-items: start; }
+.file-button { position: relative; overflow: hidden; border: 1px solid var(--line-strong) !important; }
+.file-button input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.field-error { color: var(--bad) !important; }
+.coord-row { display: flex; align-items: flex-end; gap: 8px; }
+.coord-row .field { flex: 1; }
+.attendees { margin: 0; padding: 12px 22px 18px; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.attendees li { display: flex; align-items: center; gap: 10px; }
+.attendees small { display: block; color: var(--muted); font-size: 0.76rem; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.chips span { padding: 1px 8px; border-radius: 999px; background: var(--surface-2); color: var(--ink-soft); font-size: 0.72rem; font-weight: 500; }
+
+@media (max-width: 900px) {
+  .detail { grid-template-columns: 1fr; }
+  .photo-field { flex-direction: column; }
+}
+.form-grid .wide-2 { grid-column: span 2; }
+@media (max-width: 900px) { .form-grid .wide-2 { grid-column: 1 / -1; } }

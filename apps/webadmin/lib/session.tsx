@@ -22,10 +22,19 @@ function writeToken(value: string | null) {
   }
 }
 
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000/api';
+
+/** Set by the SessionProvider so any 401 from any request signs the console out. */
+let handleUnauthorized: (() => void) | null = null;
+
 export const api = createApiClient({
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000/api',
+  baseUrl: API_BASE_URL,
   getToken: readToken,
+  onUnauthorized: () => handleUnauthorized?.(),
 });
+
+/** The current token, for the realtime socket. */
+export const getToken = readToken;
 
 type SessionValue = {
   status: 'loading' | 'guest' | 'ready';
@@ -45,6 +54,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setUser(null);
     setStatus('guest');
   }, []);
+
+  useEffect(() => {
+    handleUnauthorized = signOut;
+    return () => {
+      if (handleUnauthorized === signOut) handleUnauthorized = null;
+    };
+  }, [signOut]);
 
   useEffect(() => {
     const token = readToken();

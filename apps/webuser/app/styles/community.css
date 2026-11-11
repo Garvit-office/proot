@@ -1,0 +1,72 @@
+/* community area styles: parks, friends, nutrition, activity */
+
+.saved-list .grow { flex: 1; min-width: 0; }
+.saved-list .grow small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.saved-list .icon-button { width: 32px; height: 32px; flex: none; }
+
+/* ---------- Parks ---------- */
+.park-card .card-body h2 a:hover { color: var(--brand); }
+.park-card .card-media { display: block; }
+.park-card .card-foot { gap: 10px; }
+.checkin-banner { margin: 0 0 28px; border-color: var(--good-soft); }
+.checkin-banner a { color: var(--brand); text-decoration: underline; }
+.park-amenities { margin-top: 18px; }
+.park-checkin { display: grid; gap: 12px; justify-items: start; margin-top: 26px; }
+.park-checkin .pet-picker, .park-checkin .checkin-banner { margin: 0; width: 100%; }
+.present { margin-top: 32px; }
+.present h2 { margin: 0; font-size: 1.3rem; }
+div.detail-image.card-placeholder { display: grid; }
+
+/* ---------- Friends ---------- */
+.friends-side { display: grid; gap: 18px; }
+.friends-side .panel h2 { font-size: 1.25rem; }
+.friend-count { font-size: 0.8rem; }
+.match-link { display: flex; align-items: center; gap: 12px; width: 100%; min-width: 0; }
+.match-link:hover strong { color: var(--brand); }
+.saved-list li:has(.match-link) { padding: 0; }
+.saved-list li .match-link { padding: 10px 12px; border-radius: var(--radius-sm); }
+.match-link .muted { font-weight: 500; }
+
+/* ---------- Chat ---------- */
+.chat-page { max-width: 760px; }
+.chat { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; padding: 0; overflow: hidden; height: min(72vh, 720px); }
+.chat-head { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+.chat-head .grow { flex: 1; min-width: 0; }
+.chat-head h1 { margin: 0; font-size: 1.3rem; }
+.chat-head p { margin: 0; color: var(--muted); font-size: 0.84rem; }
+.chat-body { display: flex; flex-direction: column; gap: 8px; padding: 18px 20px; overflow-y: auto; background: var(--bg); }
+.chat-body > div { display: flex; flex-direction: column; }
+.chat-older { align-self: center; margin-bottom: 8px; }
+.chat-empty { margin: auto; text-align: center; }
+.chat-day { align-self: center; margin: 10px 0 4px; color: var(--muted); font-size: 0.74rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; text-align: center; }
+.bubble { align-self: flex-start; max-width: min(78%, 480px); padding: 9px 14px; border-radius: 16px 16px 16px 4px; background: var(--surface); border: 1px solid var(--line); }
+.bubble.mine { align-self: flex-end; border-radius: 16px 16px 4px 16px; background: var(--brand); border-color: var(--brand); color: #fff; }
+.bubble p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bubble small { display: block; margin-top: 2px; font-size: 0.7rem; color: var(--muted); }
+.bubble.mine small { color: rgba(255, 255, 255, 0.72); text-align: right; }
+.chat-form { display: flex; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--line); background: var(--surface); }
+.chat-form .input { flex: 1; min-width: 0; }
+.chat > .callout { margin: 0 16px 12px; }
+
+/* ---------- Nutrition ---------- */
+.dropzone-preview { width: 100%; max-height: 220px; object-fit: cover; border-radius: var(--radius-sm); }
+.dropzone.has-photo { padding-top: 12px; }
+.result-head .grow { flex: 1; min-width: 0; }
+.meal-target { margin: 10px 0 0; font-size: 0.86rem; }
+aside .empty { padding: 28px 0 8px; border: 0; box-shadow: none; }
+
+/* ---------- Activity ---------- */
+.day-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+.day-picker strong { min-width: 120px; text-align: center; font-size: 1.05rem; }
+.day-picker .input { min-height: 38px; }
+.timeline-entry { display: flex; align-items: center; gap: 12px; }
+.timeline-entry .grow { flex: 1; min-width: 0; }
+.timeline .timeline-meta { font-size: 0.8rem; }
+.activity-form .options { gap: 6px; }
+.activity-form .option { padding: 7px 12px; font-size: 0.84rem; }
+.activity-form textarea { padding: 10px 12px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); font: inherit; }
+
+@media (max-width: 560px) {
+  .chat { height: 78vh; }
+  .day-picker strong { min-width: 0; }
+}

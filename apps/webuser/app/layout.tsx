@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { svgDataUri, wordmarkSvg } from '@proot/shared';
 import { HeaderAccount } from '../components/HeaderAccount';
 import { Nav } from '../components/Nav';
-import { PetName } from '../components/PetBadge';
 import { SessionProvider } from '../lib/session';
 import '@proot/shared/tokens.css';
 import './globals.css';
+import './styles/shop.css';
+import './styles/care.css';
+import './styles/community.css';
 
 const sans = Inter({ subsets: ['latin'], variable: '--font-sans', display: 'swap' });
 
@@ -15,7 +17,7 @@ const logo = svgDataUri(wordmarkSvg('light'));
 
 export const metadata: Metadata = {
   title: 'Proot | Dog neighborhood',
-  description: 'A polished dog-care neighborhood app for pets, care, and community.',
+  description: 'Shop, book care, find parks and meet dogs near you.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -46,8 +48,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/care">Care</Link>
                 <Link href="/events">Events</Link>
                 <Link href="/parks">Parks</Link>
+                <Link href="/friends">Friends</Link>
+                <Link href="/account">Account</Link>
               </div>
-              <p className="footer-meta"><PetName />’s neighborhood · © {new Date().getFullYear()} Proot</p>
+              <p className="footer-meta">© {new Date().getFullYear()} Proot</p>
             </div>
           </footer>
         </SessionProvider>
